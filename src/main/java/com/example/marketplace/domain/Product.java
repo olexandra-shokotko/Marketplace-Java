@@ -1,32 +1,39 @@
 package com.example.marketplace.domain;
 
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 
-@Entity(name = "Product")
-@Table(name="product")
+@Entity
+//@Table(name="product")
 public class Product {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
-    private Long id;
+    private Long productId;
     private String name;
     private Float price;
 
     @ManyToMany(mappedBy = "products")
-    private Set<User> users = new HashSet<User>();
+    private Set<User> users;
 
-    public Long getId() {
-        return id;
+    public Product() {
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public Product(String name, Float price) {
+        this.name = name;
+        this.price = price;
+    }
+
+    public void addUser(User user) {
+        users.add(user);
+        user.getProducts().add(this);
+    }
+
+    public Long getProductId() {
+        return productId;
+    }
+
+    public void setProductId(Long id) {
+        this.productId = id;
     }
 
     public String getName() {
@@ -52,4 +59,14 @@ public class Product {
     public void setUsers(Set<User> users) {
         this.users = users;
     }
+
+/*    @Override
+    public String toString() {
+        return "Product{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", price=" + price +
+                ", users=" + users +
+                '}';
+    }*/
 }

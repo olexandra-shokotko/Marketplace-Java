@@ -4,30 +4,34 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 
-@Entity(name = "User")
-@Table(name="user")
+@Entity
+//@Table(name="user")
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
-    private Long id;
+    private Long userId;
     private String firstname;
     private String lastname;
     private Float amountOfMoney;
 
-    @ManyToMany(cascade = {
-            CascadeType.PERSIST,
-            CascadeType.MERGE
-    })
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "user_product",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "product_id")
     )
-    private Set<Product> products = new HashSet<Product>();
+    private Set<Product> products;
+
+    public User() {
+    }
+
+    public User(String firstname, String lastname, Float amountOfMoney) {
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.amountOfMoney = amountOfMoney;
+    }
 
     public void addProduct(Product product) {
         products.add(product);
@@ -69,12 +73,12 @@ public class User implements UserDetails {
         return false;
     }
 
-    public Long getId() {
-        return id;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setUserId(Long id) {
+        this.userId = id;
     }
 
     public String getFirstname() {
@@ -108,4 +112,15 @@ public class User implements UserDetails {
     public void setProducts(Set<Product> products) {
         this.products = products;
     }
+
+    /*@Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", firstname='" + firstname + '\'' +
+                ", lastname='" + lastname + '\'' +
+                ", amountOfMoney=" + amountOfMoney +
+                ", products=" + products +
+                '}';
+    }*/
 }
