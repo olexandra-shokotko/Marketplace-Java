@@ -4,8 +4,9 @@ import com.example.marketplace.domain.Product;
 import com.example.marketplace.domain.User;
 import com.example.marketplace.repository.ProductRepo;
 import com.example.marketplace.repository.UserRepo;
+import com.example.marketplace.service.InternalServerException;
+import com.example.marketplace.service.NotEnoughMoneyException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -50,6 +51,10 @@ public class MainController {
         User user = userRepo.findById(userId).get();
         Product product = productRepo.findById(productId).get();
 
+        if (user.getAmountOfMoney() < product.getPrice()) {
+            throw new NotEnoughMoneyException();
+        }
+
         user.setAmountOfMoney(user.getAmountOfMoney() - product.getPrice());
         user.addProduct(product);
 
@@ -60,24 +65,24 @@ public class MainController {
     }
 
     @GetMapping("/products/{id}")
-    public Set<Product> productsByUser(@PathVariable Long id) throws Exception {
+    public Set<Product> productsByUser(@PathVariable Long id) {
 
-        return userRepo.findById(id).orElseThrow(() -> new Exception("empty")).getProducts()/*.orElseThrow(() -> new EmployeeNotFoundException(id)*/;
+        return userRepo.findById(id).orElseThrow(InternalServerException::new).getProducts();
     }
 
     @GetMapping("/users/{id}")
-    public Set<User> usersByProduct(@PathVariable Long id) throws Exception {
+    public Set<User> usersByProduct(@PathVariable Long id) {
 
-        return productRepo.findById(id).orElseThrow(() -> new Exception("empty")).getUsers();
+        return productRepo.findById(id).orElseThrow(InternalServerException::new).getUsers();
     }
 
     @DeleteMapping("/users/{id}")
-    void deleteUser(@PathVariable Long id) {
+    void deleteUser(@PathVariable Long id) throws InternalServerException {
         userRepo.deleteById(id);
     }
 
     @DeleteMapping("/products/{id}")
-    void deleteProduct(@PathVariable Long id) {
+    void deleteProduct(@PathVariable Long id) throws InternalServerException {
         productRepo.deleteById(id);
     }
 

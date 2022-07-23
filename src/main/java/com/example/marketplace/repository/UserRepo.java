@@ -9,7 +9,6 @@ import java.util.Optional;
 @Repository
 public interface UserRepo extends JpaRepository<User, Long> {
 
-//    User findByFirstname(String firstname);
     User findByLastname(String lastname);
 
     @Override

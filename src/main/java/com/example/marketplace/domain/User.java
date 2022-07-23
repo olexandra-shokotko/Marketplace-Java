@@ -1,6 +1,5 @@
 package com.example.marketplace.domain;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -10,7 +9,6 @@ import java.util.Collection;
 import java.util.Set;
 
 @Entity
-//@Table(name="user")
 public class User implements UserDetails, Serializable {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
@@ -19,7 +17,6 @@ public class User implements UserDetails, Serializable {
     private String lastname;
     private Float amountOfMoney;
 
-//    @JsonManagedReference
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "user_product",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -116,14 +113,4 @@ public class User implements UserDetails, Serializable {
         this.products = products;
     }
 
-    /*@Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", firstname='" + firstname + '\'' +
-                ", lastname='" + lastname + '\'' +
-                ", amountOfMoney=" + amountOfMoney +
-                ", products=" + products +
-                '}';
-    }*/
 }

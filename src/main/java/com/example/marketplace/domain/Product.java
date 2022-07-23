@@ -7,7 +7,6 @@ import java.io.Serializable;
 import java.util.Set;
 
 @Entity
-//@Table(name="product")
 public class Product implements Serializable {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
@@ -64,13 +63,4 @@ public class Product implements Serializable {
         this.users = users;
     }
 
-/*    @Override
-    public String toString() {
-        return "Product{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", price=" + price +
-                ", users=" + users +
-                '}';
-    }*/
 }
