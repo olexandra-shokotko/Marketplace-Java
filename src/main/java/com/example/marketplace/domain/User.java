@@ -1,15 +1,17 @@
 package com.example.marketplace.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Set;
 
 @Entity
 //@Table(name="user")
-public class User implements UserDetails {
+public class User implements UserDetails, Serializable {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long userId;
@@ -17,6 +19,7 @@ public class User implements UserDetails {
     private String lastname;
     private Float amountOfMoney;
 
+//    @JsonManagedReference
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "user_product",
             joinColumns = @JoinColumn(name = "user_id"),

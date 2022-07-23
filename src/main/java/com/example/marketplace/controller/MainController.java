@@ -5,13 +5,13 @@ import com.example.marketplace.domain.User;
 import com.example.marketplace.repository.ProductRepo;
 import com.example.marketplace.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
+import java.util.List;
+import java.util.Set;
 
-@Controller
+@RestController
 public class MainController {
     @Autowired
     UserRepo userRepo;
@@ -20,47 +20,33 @@ public class MainController {
     ProductRepo productRepo;
 
     @GetMapping("/")
-    public String main(Model model) {
-        return "main";
+    public String main() {
+        return "marketplace";
     }
 
     @PostMapping("/add-user")
-    public String addNewUser(@RequestParam String firstname,
-                              @RequestParam String lastname,
-                              @RequestParam Float amountOfMoney,
-                              Model model) {
-        userRepo.save(new User(firstname, lastname, amountOfMoney));
-
-        return "redirect:/";
+    public User addNewUser(@RequestBody User user) {
+        return userRepo.save(user);
     }
 
     @PostMapping("/add-product")
-    public String addNewProduct(@RequestParam String name,
-                              @RequestParam Float price,
-                              Model model) {
-        productRepo.save(new Product(name, price));
-
-        return "redirect:/";
+    public Product addNewProduct(@RequestBody Product product) {
+        return productRepo.save(product);
     }
 
     @GetMapping("/users")
-    public String userList(Model model) {
-        model.addAttribute("users", userRepo.findAll());
-
-        return "userList";
+    public List<User> userList() {
+        return userRepo.findAll();
     }
 
     @GetMapping("/products")
-    public String productList(Model model) {
-        model.addAttribute("products", productRepo.findAll());
-
-        return "productList";
+    public List<Product> productList() {
+        return productRepo.findAll();
     }
 
-    @PostMapping("/buy-product")
-    public String buyProduct(@RequestParam Long userId,
-                                @RequestParam Long productId,
-                                Model model) {
+    @PostMapping("/buy-product/{userId}/{productId}")
+    public String buyProduct(@PathVariable Long userId,
+                                @PathVariable Long productId) {
         User user = userRepo.findById(userId).get();
         Product product = productRepo.findById(productId).get();
 
@@ -70,55 +56,29 @@ public class MainController {
         userRepo.flush();
         productRepo.flush();
 
-        return "redirect:/";
+        return "successful purchase";
     }
 
-    @GetMapping("/products/{user}")
-    public String productsByUser(@PathVariable User user,
-                                         Model model) {
+    @GetMapping("/products/{id}")
+    public Set<Product> productsByUser(@PathVariable Long id) throws Exception {
 
-        model.addAttribute("products", userRepo.findById(user.getUserId()).get().getProducts());
-        model.addAttribute("user", user);
-
-        return "productList";
+        return userRepo.findById(id).orElseThrow(() -> new Exception("empty")).getProducts()/*.orElseThrow(() -> new EmployeeNotFoundException(id)*/;
     }
 
-    @GetMapping("/users/{product}")
-    public String usersByProduct(@PathVariable Product product,
-                                         Model model) {
+    @GetMapping("/users/{id}")
+    public Set<User> usersByProduct(@PathVariable Long id) throws Exception {
 
-        model.addAttribute("users", productRepo.findById(product.getProductId()).get().getUsers());
-        model.addAttribute("product", product);
-
-        return "userList";
+        return productRepo.findById(id).orElseThrow(() -> new Exception("empty")).getUsers();
     }
 
-/*    @GetMapping("/users/{user}")
-    public String userEditForm(@PathVariable User user, Model model) {
-        model.addAttribute("user", user);
+    @DeleteMapping("/users/{id}")
+    void deleteUser(@PathVariable Long id) {
+        userRepo.deleteById(id);
+    }
 
-        return "userEdit";
-    }*/
+    @DeleteMapping("/products/{id}")
+    void deleteProduct(@PathVariable Long id) {
+        productRepo.deleteById(id);
+    }
 
-/*    @PostMapping
-    public String userSave(@RequestParam String firstname,
-                           @RequestParam String lastname,
-                           @RequestParam Map<String, String> form,
-                           @RequestParam("userId") User user) {
-        user.setUsername(username);
-
-        Set<String> roles = Arrays.stream(Role.values()).map(Role::name).collect(Collectors.toSet());
-
-        user.getRoles().clear();
-
-        for (String key : form.keySet()) {
-            if (roles.contains(key)) {
-                user.getRoles().add(Role.valueOf(key));
-            }
-        }
-
-        userRepo.save(user);
-
-        return "redirect:/user";
-    }*/
 }

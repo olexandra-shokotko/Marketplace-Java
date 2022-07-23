@@ -1,17 +1,21 @@
 package com.example.marketplace.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Set;
 
 @Entity
 //@Table(name="product")
-public class Product {
+public class Product implements Serializable {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long productId;
     private String name;
     private Float price;
 
+    @JsonBackReference
     @ManyToMany(mappedBy = "products")
     private Set<User> users;
 
